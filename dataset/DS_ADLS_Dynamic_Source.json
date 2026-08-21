@@ -8,6 +8,12 @@
 		"parameters": {
 			"p_FileName": {
 				"type": "string"
+			},
+			"p_Container": {
+				"type": "string"
+			},
+			"p_Directory": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -19,8 +25,12 @@
 					"value": "@dataset().p_FileName",
 					"type": "Expression"
 				},
+				"folderPath": {
+					"value": "@dataset().p_Directory",
+					"type": "Expression"
+				},
 				"fileSystem": {
-					"value": "saitejascontainer1",
+					"value": "@dataset().p_Container",
 					"type": "Expression"
 				}
 			},
