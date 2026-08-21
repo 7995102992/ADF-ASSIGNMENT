@@ -44,7 +44,11 @@
 				"inputs": [
 					{
 						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_Schema": "meta",
+							"p_Table": "EntityConfig"
+						}
 					}
 				],
 				"outputs": [
