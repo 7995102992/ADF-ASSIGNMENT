@@ -1,9 +1,9 @@
 {
-	"name": "PL_Metadata_Driven_Load",
+	"name": "pl_SalesOrchestrator_Main",
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup_ETL_Metadata",
+				"name": "GetActiveEntities",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -18,7 +18,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT *\nFROM dbo.ETL_Metadata\nWHERE IsActive = 1",
+							"value": "SELECT EntityId, EntityName, EntityType, Priority \nFROM meta.EntityConfig \nWHERE IsActive = 1 \nORDER BY Priority ASC",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -32,11 +32,11 @@
 				}
 			},
 			{
-				"name": "ForEach_Metadata",
+				"name": "ForEachEntity",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup_ETL_Metadata",
+						"activity": "GetActiveEntities",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -45,9 +45,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup_ETL_Metadata').output.value",
+						"value": "@activity('GetActiveEntities').output.value",
 						"type": "Expression"
 					},
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "ExecuteEntityPipeline",
@@ -59,7 +60,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "pipeline3",
+									"referenceName": "PL_Metadata_Driven_Load",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
@@ -69,8 +70,6 @@
 				}
 			}
 		],
-		"annotations": [],
-		"lastPublishTime": "2026-08-21T06:03:00Z"
-	},
-	"type": "Microsoft.DataFactory/factories/pipelines"
+		"annotations": []
+	}
 }
