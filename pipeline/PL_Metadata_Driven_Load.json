@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup_ETL_Metadata",
+				"name": "GetEntityConfig",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -18,7 +18,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT *\nFROM dbo.ETL_Metadata\nWHERE IsActive = 1",
+							"value": "@concat('SELECT * FROM meta.EntityConfig WHERE EntityId = ', string(pipeline().parameters.EntityId))",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -27,48 +27,15 @@
 					"dataset": {
 						"referenceName": "AzureSqlTable1",
 						"type": "DatasetReference"
-					},
-					"firstRowOnly": false
-				}
-			},
-			{
-				"name": "ForEach_Metadata",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Lookup_ETL_Metadata",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Lookup_ETL_Metadata').output.value",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "ExecuteEntityPipeline",
-							"type": "ExecutePipeline",
-							"dependsOn": [],
-							"policy": {
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "pipeline3",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true
-							}
-						}
-					]
 				}
 			}
 		],
+		"parameters": {
+			"EntityId": {
+				"type": "int"
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2026-08-21T06:03:00Z"
 	},
