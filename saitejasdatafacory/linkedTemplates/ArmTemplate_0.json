@@ -938,7 +938,12 @@
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
-										"parameters": {}
+										"parameters": {
+											"EntityId": {
+												"value": "@item().EntityId",
+												"type": "Expression"
+											}
+										}
 									}
 								}
 							]
