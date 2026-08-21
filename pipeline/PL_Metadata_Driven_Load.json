@@ -31,6 +31,10 @@
 							"p_Schema": {
 								"value": "meta",
 								"type": "Expression"
+							},
+							"p_Table": {
+								"value": "EntityConfig",
+								"type": "Expression"
 							}
 						}
 					}
@@ -60,6 +64,10 @@
 						"referenceName": "DS_ADLS_Dynamic_Source",
 						"type": "DatasetReference",
 						"parameters": {
+							"p_FileName": {
+								"value": "*",
+								"type": "Expression"
+							},
 							"p_Container": {
 								"value": "@activity('GetEntityConfig').output.firstRow.SourceContainer",
 								"type": "Expression"
@@ -75,6 +83,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
