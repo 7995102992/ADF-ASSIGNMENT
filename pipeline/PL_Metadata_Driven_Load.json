@@ -52,7 +52,17 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "DS_ADLS_Dynamic_Source",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_Container": {
+								"value": "@activity('GetEntityConfig').output.firstRow.SourceContainer",
+								"type": "Expression"
+							},
+							"p_Directory": {
+								"value": "@activity('GetEntityConfig').output.firstRow.SourcePathPattern",
+								"type": "Expression"
+							}
+						}
 					},
 					"fieldList": [
 						"childItems"
