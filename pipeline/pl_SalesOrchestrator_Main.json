@@ -73,7 +73,13 @@
 									"referenceName": "PL_Metadata_Driven_Load",
 									"type": "PipelineReference"
 								},
-								"waitOnCompletion": true
+								"waitOnCompletion": true,
+								"parameters": {
+									"EntityId": {
+										"value": "@item().EntityId",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					]
