@@ -5,6 +5,14 @@
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"p_Schema": {
+				"type": "string"
+			},
+			"p_Table": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
@@ -95,8 +103,14 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "dbo",
-			"table": "ETL_Metadata"
+			"schema": {
+				"value": "@dataset().p_Schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().p_Table",
+				"type": "Expression"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
