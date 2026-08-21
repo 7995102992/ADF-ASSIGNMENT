@@ -26,7 +26,17 @@
 					},
 					"dataset": {
 						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_Schema": {
+								"value": "meta",
+								"type": "Expression"
+							},
+							"p_Table": {
+								"value": "EntityConfig",
+								"type": "Expression"
+							}
+						}
 					},
 					"firstRowOnly": false
 				}
