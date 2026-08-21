@@ -1,0 +1,134 @@
+{
+	"name": "PL_Metadata_Driven_Load",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_ETL_Metadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT *\nFROM dbo.ETL_Metadata\nWHERE IsActive = 1",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach_Metadata",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup_ETL_Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_ETL_Metadata').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_Dynamic_Source_To_ADLS",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_ADLS_Dynamic_Source",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_FileName": {
+											"value": "@concat(item().SourceTable, '.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLS_Dynamic_Target",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_TargetPath": {
+											"value": "@item().TargetPath",
+											"type": "Expression"
+										},
+										"p_FileName": {
+											"value": "@concat(item().SourceTable, '.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-08-21T06:03:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,103 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "employee_id",
+				"type": "varchar"
+			},
+			{
+				"name": "first_name",
+				"type": "varchar"
+			},
+			{
+				"name": "last_name",
+				"type": "varchar"
+			},
+			{
+				"name": "email",
+				"type": "varchar"
+			},
+			{
+				"name": "department",
+				"type": "varchar"
+			},
+			{
+				"name": "job_title",
+				"type": "varchar"
+			},
+			{
+				"name": "city",
+				"type": "varchar"
+			},
+			{
+				"name": "state",
+				"type": "varchar"
+			},
+			{
+				"name": "employment_type",
+				"type": "varchar"
+			},
+			{
+				"name": "work_mode",
+				"type": "varchar"
+			},
+			{
+				"name": "employment_status",
+				"type": "varchar"
+			},
+			{
+				"name": "joining_date",
+				"type": "date"
+			},
+			{
+				"name": "date_of_birth",
+				"type": "date"
+			},
+			{
+				"name": "experience_years",
+				"type": "decimal",
+				"precision": 4,
+				"scale": 1
+			},
+			{
+				"name": "annual_salary_inr",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "performance_rating",
+				"type": "decimal",
+				"precision": 3,
+				"scale": 1
+			},
+			{
+				"name": "leave_days_used",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "monthly_attendance_pct",
+				"type": "decimal",
+				"precision": 5,
+				"scale": 2
+			},
+			{
+				"name": "projects_assigned",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ETL_Metadata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

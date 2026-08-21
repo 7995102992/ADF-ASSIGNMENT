@@ -1,0 +1,15 @@
+{
+	"name": "saitejasdatafacory",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b9c6fc49-132c-4073-b840-84d2a716b18e",
+		"tenantId": "5c09e444-bd0a-476e-83c1-a159227e6a51"
+	}
+}
