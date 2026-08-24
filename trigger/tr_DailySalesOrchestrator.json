@@ -1,0 +1,24 @@
+{
+	"name": "tr_DailySalesOrchestrator",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_SalesOrchestrator_Main",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2026-08-24T17:30:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
