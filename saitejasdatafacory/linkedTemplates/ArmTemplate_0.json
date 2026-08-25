@@ -613,7 +613,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "ForEachFile",
+								"activity": "GetNewWatermark",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -629,6 +629,88 @@
 						"userProperties": [],
 						"typeProperties": {
 							"storedProcedureName": "[[dw].[usp_LoadFactSales]"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDatabase1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GetNewWatermark",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "ForEachFile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@if(\n    empty(activity('GetEntityConfig').output.firstRow.WatermarkColumn),\n    'SELECT CONVERT(VARCHAR(30), GETUTCDATE(), 126) AS NewWatermarkValue',\n    concat('SELECT CONVERT(VARCHAR(30), ISNULL(MAX(', activity('GetEntityConfig').output.firstRow.WatermarkColumn, '), ''', coalesce(activity('GetEntityConfig').output.firstRow.LastWatermarkValue, '1900-01-01'), '''), 126) AS NewWatermarkValue FROM ', activity('GetEntityConfig').output.firstRow.StagingTable)\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_Schema": "stg",
+									"p_Table": "SalesOrder"
+								}
+							}
+						}
+					},
+					{
+						"name": "UpdateWatermarkValue",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "ExecuteTargetLoadAndDeduplication",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[meta].[usp_UpdateWatermark]",
+							"storedProcedureParameters": {
+								"EntityId": {
+									"value": {
+										"value": "@pipeline().parameters.EntityId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								},
+								"NewWatermark": {
+									"value": {
+										"value": "@activity('GetNewWatermark').output.firstRow.NewWatermarkValue",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								}
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "AzureSqlDatabase1",
