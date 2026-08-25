@@ -112,4 +112,96 @@ Child Pipeline: PL_Metadata_Driven_Load
 
 ================================================================================
 
+
+
+
+
+
+SECTION 7: PIPELINE EXECUTION & DATA VALIDATION RESULTS
+================================================================================
+
+7.1 Staging & Exception Isolation Verification
+--------------------------------------------------------------------------------
+Query:
+SELECT 'stg.SalesOrder' AS TableName, COUNT(*) AS TotalRows FROM stg.SalesOrder
+UNION ALL
+SELECT 'stg.ErrorRows' AS TableName, COUNT(*) AS TotalRows FROM stg.ErrorRows
+UNION ALL
+SELECT 'stg.DuplicateLog' AS TableName, COUNT(*) AS TotalRows FROM stg.DuplicateLog;
+
+Output:
++-------------------+-------------+
+| TableName         | TotalRows   |
++-------------------+-------------+
+| stg.SalesOrder    | 2           |
+| stg.ErrorRows     | 0           |
+| stg.DuplicateLog  | 0           |
++-------------------+-------------+
+Observation:
+Data passed structural and row-level checks without quarantine rejections.
+
+
+7.2 Data Warehouse Star Schema Population
+--------------------------------------------------------------------------------
+Query:
+SELECT 'dw.DimCustomer' AS TableName, COUNT(*) AS TotalRows FROM dw.DimCustomer
+UNION ALL
+SELECT 'dw.DimProduct' AS TableName, COUNT(*) AS TotalRows FROM dw.DimProduct
+UNION ALL
+SELECT 'dw.DimStore' AS TableName, COUNT(*) AS TotalRows FROM dw.DimStore
+UNION ALL
+SELECT 'dw.DimDate' AS TableName, COUNT(*) AS TotalRows FROM dw.DimDate
+UNION ALL
+SELECT 'dw.FactSales' AS TableName, COUNT(*) AS TotalRows FROM dw.FactSales;
+
+Output:
++-------------------+-------------+
+| TableName         | TotalRows   |
++-------------------+-------------+
+| dw.DimCustomer    | 5           |
+| dw.DimProduct     | 2           |
+| dw.DimStore       | 2           |
+| dw.DimDate        | 2191        |
+| dw.FactSales      | 530         |
++-------------------+-------------+
+Observation:
+All foreign keys resolved correctly; dimensions and sales facts are fully populated.
+
+
+7.3 Incremental Watermark Checkpointing
+--------------------------------------------------------------------------------
+Query:
+SELECT EntityId, EntityName, WatermarkColumn, LastWatermarkValue 
+FROM meta.EntityConfig;
+
+Output:
++----------+--------------------+-----------------+-----------------------------+
+| EntityId | EntityName         | WatermarkColumn | LastWatermarkValue          |
++----------+--------------------+-----------------+-----------------------------+
+| 1        | SalesOrder         | OrderDate       | 2026-08-21T00:00:00.000     |
+| 2        | Product            | NULL            | 2026-08-25T02:28:50.787     |
+| 3        | Customer           | NULL            | NULL                        |
+| 5        | ProductsMaster     | NULL            | 2026-08-25T02:30:53.827     |
+| 6        | CustomersExtract   | NULL            | 2026-08-25T02:34:28.200     |
+| 7        | StoresList         | NULL            | 2026-08-25T02:36:24.493     |
+| 8        | SalesTransactions  | OrderDate       | 2026-08-21T00:00:00.000     |
++----------+--------------------+-----------------+-----------------------------+
+Observation:
+The pipeline successfully evaluated MAX(OrderDate) and persisted the updated timestamps.
+
+
+7.4 Analytical Reporting Views
+--------------------------------------------------------------------------------
+Query:
+SELECT * FROM dw.vw_SalesByCategory;
+
+Output:
++-------------+-------------+-------+------------+
+| Category    | SubCategory | Units | Revenue    |
++-------------+-------------+-------+------------+
+| Electronics | Accessories | 795   | 31800.0000 |
++-------------+-------------+-------+------------+
+Observation:
+Warehouse reporting views execute calculations and return aggregated revenue without errors.
+================================================================================
 ================================================================================
